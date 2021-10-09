@@ -1,0 +1,4 @@
+{
+    "cxxflags": "-std=c++17",
+    "includes": "lib/sdlpp/include"
+}
