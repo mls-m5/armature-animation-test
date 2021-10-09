@@ -5,6 +5,7 @@
 #include "sdlpp/render.hpp"
 #include "sdlpp/window.hpp"
 #include <chrono>
+#include <cmath>
 #include <experimental/source_location>
 #include <iostream>
 #include <thread>
@@ -37,16 +38,31 @@ int main(int argc, char **argv) {
 
     expectTrue(renderer, "could not create renderer");
 
-    renderer.drawColor({100, 0, 0});
-    renderer.fillRect();
-
-    renderer.drawColor({0, 0, 0});
-    renderer.drawLine(0, 0, 200, 200);
-
     auto body = createBody();
-    drawArmature(renderer, body, Vec2f{200, 200});
+    auto thigh = body.getBone("thigh l");
+    auto shin = body.getBone("shin l");
 
-    renderer.present();
+    auto now = std::chrono::high_resolution_clock::now();
+    auto passedTime = std::chrono::duration<float>{};
 
-    std::this_thread::sleep_for(5s);
+    for (size_t i = 0; i < 1000; ++i) {
+        auto newNow = std::chrono::high_resolution_clock::now();
+        passedTime += (newNow - now);
+        now = newNow;
+
+        renderer.drawColor({100, 0, 0});
+        renderer.fillRect();
+
+        thigh->angle = sin(passedTime.count() * 2.);
+        shin->angle = -cos(passedTime.count() * 2.) - 1.;
+
+        //        renderer.drawColor({0, 0, 0});
+        //        renderer.drawLine(0, 0, 200, 200);
+
+        drawArmature(renderer, body, Vec2f{200, 200});
+
+        renderer.present();
+
+        std::this_thread::sleep_for(5ms);
+    }
 }

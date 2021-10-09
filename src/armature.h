@@ -9,6 +9,20 @@ struct Bone {
     float length = 1;
     float angle = 0;
     std::vector<Bone> children;
+
+    Bone *getBone(std::string_view name) {
+        if (this->name == name) {
+            return this;
+        }
+
+        for (auto &child : children) {
+            if (auto bone = child.getBone(name)) {
+                return bone;
+            }
+        }
+
+        return nullptr;
+    }
 };
 
 inline Bone createBody() {
